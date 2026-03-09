@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PropBot AI — Never Miss A Property Lead Again</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Sans:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #06080C;
+    --surface: #0D1117;
+    --surface-2: #151B25;
+    --border: #1E2632;
+    --border-light: #2A3342;
+    --gold: #D4A853;
+    --gold-dim: #B8923E;
+    --gold-glow: rgba(212,168,83,0.12);
+    --gold-glow-strong: rgba(212,168,83,0.25);
+    --emerald: #3DDC84;
+    --emerald-dim: rgba(61,220,132,0.15);
+    --text: #E8E4DD;
+    --text-2: #9BA3B0;
+    --text-3: #5F6878;
+    --radius: 16px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* ===== GRAIN OVERLAY ===== */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    opacity: 0.025;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  h1, h2, h3, h4 { font-family: 'Sora', sans-serif; }
+
+  .container { max-width: 1140px; margin: 0 auto; padding: 0 24px; }
+
+  /* ===== NAVBAR ===== */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 18px 0;
+    background: rgba(6,8,12,0.8);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(30,38,50,0.5);
+  }
+
+  nav .container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .logo {
+    font-family: 'Sora', sans-serif;
+    font-weight: 700;
+    font-size: 20px;
+    color: var(--text);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .logo-icon {
+    width: 34px; height: 34px;
+    background: linear-gradient(135deg, var(--gold), var(--gold-dim));
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 800; color: var(--bg);
+    letter-spacing: 0.5px;
+  }
+
+  .nav-cta {
+    padding: 10px 24px;
+    background: linear-gradient(135deg, var(--gold), var(--gold-dim));
+    color: var(--bg);
+    font-weight: 600;
+    font-size: 14px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    text-decoration: none;
+    font-family: 'Sora', sans-serif;
+    transition: all 0.2s;
+  }
+
+  .nav-cta:hover { transform: translateY(-1px); box-shadow: 0 6px 24px rgba(212,168,83,0.3); }
+
+  /* ===== HERO ===== */
+  .hero {
+    padding: 160px 0 100px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 800px; height: 600px;
+    background: radial-gradient(ellipse, rgba(212,168,83,0.06) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 18px;
+    background: var(--gold-glow);
+    border: 1px solid rgba(212,168,83,0.2);
+    border-radius: 40px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--gold);
+    margin-bottom: 28px;
+    animation: fadeUp 0.6s ease both;
+  }
+
+  .hero-badge::before {
+    content: '';
+    width: 6px; height: 6px;
+    background: var(--emerald);
+    border-radius: 50%;
+    box-shadow: 0 0 8px rgba(61,220,132,0.5);
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .hero h1 {
+    font-size: clamp(38px, 5.5vw, 64px);
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 24px;
+    letter-spacing: -1.5px;
+    animation: fadeUp 0.6s ease 0.1s both;
+  }
+
+  .hero h1 .highlight {
+    background: linear-gradient(135deg, var(--gold) 0%, #F0D78C 50%, var(--gold-dim) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero-sub {
+    font-size: 18px;
+    color: var(--text-2);
+    max-width: 520px;
+    margin-bottom: 40px;
+    line-height: 1.7;
+    animation: fadeUp 0.6s ease 0.2s both;
+  }
+
+  .hero-ctas {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    animation: fadeUp 0.6s ease 0.3s both;
+  }
+
+  .btn-primary {
+    padding: 16px 36px;
+    background: linear-gradient(135deg, var(--gold), var(--gold-dim));
+    color: var(--bg);
+    font-weight: 700;
+    font-size: 15px;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    text-decoration: none;
+    font-family: 'Sora', sans-serif;
+    transition: all 0.25s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(212,168,83,0.35);
+  }
+
+  .btn-secondary {
+    padding: 16px 36px;
+    background: transparent;
+    color: var(--text);
+    font-weight: 600;
+    font-size: 15px;
+    border: 1px solid var(--border-light);
+    border-radius: 12px;
+    cursor: pointer;
+    text-decoration: none;
+    font-family: 'Sora', sans-serif;
+    transition: all 0.25s;
+  }
+
+  .btn-secondary:hover {
+    border-color: var(--gold);
+    color: var(--gold);
+    background: var(--gold-glow);
+  }
+
+  /* ===== STATS BAR ===== */
+  .stats-bar {
+    padding: 48px 0;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 32px;
+    text-align: center;
+  }
+
+  .stat-item h3 {
+    font-size: 36px;
+    font-weight: 800;
+    color: var(--gold);
+    letter-spacing: -1px;
+    margin-bottom: 6px;
+  }
+
+  .stat-item p {
+    font-size: 14px;
+    color: var(--text-3);
+    font-weight: 500;
+  }
+
+  /* ===== PROBLEM SECTION ===== */
+  .problem {
+    padding: 100px 0;
+  }
+
+  .section-label {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 16px;
+  }
+
+  .section-title {
+    font-size: clamp(28px, 3.5vw, 42px);
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    margin-bottom: 48px;
+    line-height: 1.2;
+  }
+
+  .problem-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+
+  .problem-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 32px;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .problem-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #f87171, transparent);
+    opacity: 0.6;
+  }
+
+  .problem-card .icon {
+    font-size: 28px;
+    margin-bottom: 16px;
+    display: block;
+  }
+
+  .problem-card h3 {
+    font-size: 17px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: var(--text);
+  }
+
+  .problem-card p {
+    font-size: 14px;
+    color: var(--text-2);
+    line-height: 1.6;
+  }
+
+  /* ===== SOLUTION SECTION ===== */
+  .solution {
+    padding: 100px 0;
+    background: linear-gradient(180deg, var(--surface) 0%, var(--bg) 100%);
+  }
+
+  .solution-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+
+  .solution-card {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 32px;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .solution-card:hover {
+    border-color: rgba(212,168,83,0.3);
+    transform: translateY(-4px);
+    box-shadow: 0 16px 48px rgba(0,0,0,0.3);
+  }
+
+  .solution-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    opacity: 0.6;
+  }
+
+  .solution-card .icon {
+    width: 48px; height: 48px;
+    background: var(--gold-glow);
+    border: 1px solid rgba(212,168,83,0.15);
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+    margin-bottom: 20px;
+  }
+
+  .solution-card h3 {
+    font-size: 17px;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+
+  .solution-card p {
+    font-size: 14px;
+    color: var(--text-2);
+    line-height: 1.6;
+  }
+
+  /* ===== HOW IT WORKS ===== */
+  .how-it-works {
+    padding: 100px 0;
+  }
+
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 40px;
+    margin-top: 48px;
+  }
+
+  .step {
+    position: relative;
+    text-align: center;
+  }
+
+  .step-number {
+    width: 56px; height: 56px;
+    background: var(--gold-glow);
+    border: 2px solid rgba(212,168,83,0.25);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Sora', sans-serif;
+    font-weight: 700;
+    font-size: 20px;
+    color: var(--gold);
+    margin: 0 auto 20px;
+  }
+
+  .step h3 {
+    font-size: 17px;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+
+  .step p {
+    font-size: 14px;
+    color: var(--text-2);
+    line-height: 1.6;
+  }
+
+  /* ===== PRICING ===== */
+  .pricing {
+    padding: 100px 0;
+    background: linear-gradient(180deg, var(--surface) 0%, var(--bg) 100%);
+  }
+
+  .pricing-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin-top: 48px;
+  }
+
+  .price-card {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 36px;
+    text-align: center;
+    transition: all 0.3s;
+    position: relative;
+  }
+
+  .price-card.featured {
+    border-color: rgba(212,168,83,0.4);
+    box-shadow: 0 0 60px rgba(212,168,83,0.08);
+  }
+
+  .price-card.featured::before {
+    content: 'MOST POPULAR';
+    position: absolute;
+    top: -12px; left: 50%;
+    transform: translateX(-50%);
+    padding: 4px 16px;
+    background: linear-gradient(135deg, var(--gold), var(--gold-dim));
+    color: var(--bg);
+    font-family: 'Sora', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    border-radius: 20px;
+  }
+
+  .price-card h3 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+
+  .price-card .desc {
+    font-size: 13px;
+    color: var(--text-3);
+    margin-bottom: 24px;
+  }
+
+  .price-amount {
+    font-family: 'Sora', sans-serif;
+    font-size: 42px;
+    font-weight: 800;
+    color: var(--gold);
+    letter-spacing: -1px;
+  }
+
+  .price-amount span {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--text-3);
+  }
+
+  .price-setup {
+    font-size: 14px;
+    color: var(--text-2);
+    margin: 8px 0 28px;
+  }
+
+  .price-features {
+    list-style: none;
+    text-align: left;
+    margin-bottom: 32px;
+  }
+
+  .price-features li {
+    padding: 8px 0;
+    font-size: 14px;
+    color: var(--text-2);
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .price-features li:last-child { border: none; }
+
+  .price-features li::before {
+    content: '✓';
+    color: var(--emerald);
+    font-weight: 700;
+    font-size: 14px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .price-btn {
+    width: 100%;
+    padding: 14px;
+    border-radius: 12px;
+    font-family: 'Sora', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+    text-decoration: none;
+    display: block;
+    text-align: center;
+  }
+
+  .price-btn.gold {
+    background: linear-gradient(135deg, var(--gold), var(--gold-dim));
+    color: var(--bg);
+  }
+
+  .price-btn.outline {
+    background: transparent;
+    border: 1px solid var(--border-light);
+    color: var(--text);
+  }
+
+  .price-btn:hover { transform: translateY(-2px); }
+
+  /* ===== SOCIAL PROOF ===== */
+  .social-proof {
+    padding: 80px 0;
+  }
+
+  .proof-logos {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 48px;
+    flex-wrap: wrap;
+    opacity: 0.4;
+    margin-top: 32px;
+  }
+
+  .proof-logos span {
+    font-family: 'Sora', sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    color: var(--text);
+    letter-spacing: 1px;
+  }
+
+  /* ===== CTA SECTION ===== */
+  .final-cta {
+    padding: 100px 0;
+    text-align: center;
+    position: relative;
+  }
+
+  .final-cta::before {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 600px; height: 400px;
+    background: radial-gradient(ellipse, rgba(212,168,83,0.06) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .cta-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 64px 48px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cta-box::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  }
+
+  .cta-box h2 {
+    font-size: clamp(28px, 3.5vw, 40px);
+    font-weight: 700;
+    margin-bottom: 16px;
+    letter-spacing: -0.5px;
+  }
+
+  .cta-box p {
+    font-size: 16px;
+    color: var(--text-2);
+    margin-bottom: 36px;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .cta-form {
+    display: flex;
+    gap: 12px;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+
+  .cta-input {
+    flex: 1;
+    padding: 16px 20px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    color: var(--text);
+    font-size: 15px;
+    font-family: 'DM Sans', sans-serif;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .cta-input:focus { border-color: rgba(212,168,83,0.4); }
+
+  .cta-input::placeholder { color: var(--text-3); }
+
+  /* ===== FOOTER ===== */
+  footer {
+    padding: 40px 0;
+    border-top: 1px solid var(--border);
+    text-align: center;
+  }
+
+  footer p {
+    font-size: 13px;
+    color: var(--text-3);
+  }
+
+  footer a { color: var(--gold); text-decoration: none; }
+
+  /* ===== FLOATING CHAT PREVIEW ===== */
+  .chat-preview {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 90;
+  }
+
+  .chat-fab {
+    width: 60px; height: 60px;
+    background: linear-gradient(135deg, var(--gold), var(--gold-dim));
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 26px;
+    box-shadow: 0 8px 32px rgba(212,168,83,0.3);
+    transition: all 0.3s;
+    animation: fabPulse 3s infinite;
+  }
+
+  .chat-fab:hover { transform: scale(1.1); }
+
+  @keyframes fabPulse {
+    0%, 100% { box-shadow: 0 8px 32px rgba(212,168,83,0.3); }
+    50% { box-shadow: 0 8px 48px rgba(212,168,83,0.5); }
+  }
+
+  .fab-tooltip {
+    position: absolute;
+    bottom: 70px; right: 0;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 18px;
+    font-size: 13px;
+    color: var(--text);
+    white-space: nowrap;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+    animation: fadeUp 0.4s ease 1s both;
+  }
+
+  .fab-tooltip::after {
+    content: '';
+    position: absolute;
+    bottom: -6px; right: 24px;
+    width: 12px; height: 12px;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    transform: rotate(45deg);
+  }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 768px) {
+    .stats-grid, .problem-grid, .solution-grid, .steps, .pricing-grid {
+      grid-template-columns: 1fr;
+    }
+    .hero { padding: 130px 0 60px; }
+    .cta-form { flex-direction: column; }
+    .hero-ctas { flex-direction: column; }
+    .btn-primary, .btn-secondary { text-align: center; justify-content: center; }
+    .proof-logos { gap: 24px; }
+  }
+
+  @media (min-width: 769px) and (max-width: 1024px) {
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    .problem-grid, .solution-grid, .pricing-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="container">
+    <a href="#" class="logo">
+      <div class="logo-icon">PB</div>
+      PropBot AI
+    </a>
+    <a href="#pricing" class="nav-cta">Get Started</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-badge">Built for Dubai Real Estate</div>
+    <h1>
+      Your Properties Sell<br>
+      <span class="highlight">While You Sleep.</span>
+    </h1>
+    <p class="hero-sub">
+      An AI assistant that lives on your website — answering property questions, qualifying buyers, and booking viewings 24/7. In English and Arabic.
+    </p>
+    <div class="hero-ctas">
+      <a href="#pricing" class="btn-primary">See Pricing →</a>
+      <a href="#demo" class="btn-secondary">Watch it in action</a>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<section class="stats-bar">
+  <div class="container">
+    <div class="stats-grid">
+      <div class="stat-item">
+        <h3>67%</h3>
+        <p>of leads go cold if not<br>responded to in 5 minutes</p>
+      </div>
+      <div class="stat-item">
+        <h3>24/7</h3>
+        <p>your AI responds instantly<br>even at 3am</p>
+      </div>
+      <div class="stat-item">
+        <h3>3×</h3>
+        <p>more viewings booked<br>with instant response</p>
+      </div>
+      <div class="stat-item">
+        <h3>&lt;2s</h3>
+        <p>average AI response time<br>vs hours for humans</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROBLEM -->
+<section class="problem" id="problem">
+  <div class="container">
+    <div class="section-label">The Problem</div>
+    <h2 class="section-title">Every minute without a reply,<br>you're losing buyers to competitors.</h2>
+    <div class="problem-grid">
+      <div class="problem-card">
+        <span class="icon">🕐</span>
+        <h3>Leads come at all hours</h3>
+        <p>International buyers browse from different time zones. Your office is closed, but their interest doesn't wait until 9am.</p>
+      </div>
+      <div class="problem-card">
+        <span class="icon">📱</span>
+        <h3>Same questions, over and over</h3>
+        <p>"What's the price? Is it freehold? What's the service charge?" Your team wastes hours answering the same thing daily.</p>
+      </div>
+      <div class="problem-card">
+        <span class="icon">💸</span>
+        <h3>Lost leads = lost commissions</h3>
+        <p>A buyer who doesn't get a reply within 5 minutes is 10× less likely to convert. That's money walking out the door.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SOLUTION -->
+<section class="solution" id="features">
+  <div class="container">
+    <div class="section-label">The Solution</div>
+    <h2 class="section-title">An AI concierge that knows<br>your properties inside out.</h2>
+    <div class="solution-grid">
+      <div class="solution-card">
+        <div class="icon">🏠</div>
+        <h3>Property-Trained AI</h3>
+        <p>Trained on your specific listings, areas, prices, and payment plans. It answers like your best agent would.</p>
+      </div>
+      <div class="solution-card">
+        <div class="icon">🎯</div>
+        <h3>Lead Qualification</h3>
+        <p>Captures budget, timeline, preferred area, and property type. Every lead lands in your inbox pre-qualified.</p>
+      </div>
+      <div class="solution-card">
+        <div class="icon">📅</div>
+        <h3>Viewing Bookings</h3>
+        <p>Suggests available times and collects contact details. Your agents wake up to a calendar full of confirmed viewings.</p>
+      </div>
+      <div class="solution-card">
+        <div class="icon">🌍</div>
+        <h3>English & Arabic</h3>
+        <p>Seamlessly switches between languages based on the buyer's preference. No translation delays.</p>
+      </div>
+      <div class="solution-card">
+        <div class="icon">⚡</div>
+        <h3>Instant Setup</h3>
+        <p>One line of code on your website. We handle the rest — training, customization, branding. Live in 48 hours.</p>
+      </div>
+      <div class="solution-card">
+        <div class="icon">📊</div>
+        <h3>Lead Dashboard</h3>
+        <p>See every conversation, qualified lead, and booking in one place. Export to your CRM with one click.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how-it-works" id="demo">
+  <div class="container">
+    <div class="section-label">How It Works</div>
+    <h2 class="section-title">Live in 48 hours.<br>No technical skills needed.</h2>
+    <div class="steps">
+      <div class="step">
+        <div class="step-number">1</div>
+        <h3>Share Your Listings</h3>
+        <p>Send us your property details, price lists, and FAQs. We train the AI on your specific inventory and brand voice.</p>
+      </div>
+      <div class="step">
+        <div class="step-number">2</div>
+        <h3>We Build & Brand It</h3>
+        <p>We create your custom chatbot with your logo, colors, and tone. Matches your website perfectly.</p>
+      </div>
+      <div class="step">
+        <div class="step-number">3</div>
+        <h3>Paste One Line of Code</h3>
+        <p>Add a single script tag to your website. The chatbot appears instantly. Leads start flowing in.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="pricing" id="pricing">
+  <div class="container">
+    <div class="section-label">Pricing</div>
+    <h2 class="section-title">One closed deal pays for<br>a full year of PropBot.</h2>
+    <div class="pricing-grid">
+      <div class="price-card">
+        <h3>Starter</h3>
+        <p class="desc">For independent agents</p>
+        <div class="price-amount">500 <span>AED/mo</span></div>
+        <p class="price-setup">+ 2,000 AED one-time setup</p>
+        <ul class="price-features">
+          <li>AI chatbot on your website</li>
+          <li>Trained on up to 50 listings</li>
+          <li>Lead capture & email alerts</li>
+          <li>English language</li>
+          <li>Email support</li>
+        </ul>
+        <a href="#contact" class="price-btn outline">Get Started</a>
+      </div>
+      <div class="price-card featured">
+        <h3>Professional</h3>
+        <p class="desc">For growing agencies</p>
+        <div class="price-amount">1,000 <span>AED/mo</span></div>
+        <p class="price-setup">+ 3,500 AED one-time setup</p>
+        <ul class="price-features">
+          <li>Everything in Starter</li>
+          <li>Unlimited listings</li>
+          <li>English + Arabic</li>
+          <li>Viewing booking system</li>
+          <li>Lead dashboard & analytics</li>
+          <li>Priority WhatsApp support</li>
+        </ul>
+        <a href="#contact" class="price-btn gold">Get Started</a>
+      </div>
+      <div class="price-card">
+        <h3>Enterprise</h3>
+        <p class="desc">For developers & large firms</p>
+        <div class="price-amount">Custom</div>
+        <p class="price-setup">Tailored to your scale</p>
+        <ul class="price-features">
+          <li>Everything in Professional</li>
+          <li>Multi-project support</li>
+          <li>CRM integration</li>
+          <li>Custom AI training</li>
+          <li>Dedicated account manager</li>
+          <li>White-label option</li>
+        </ul>
+        <a href="#contact" class="price-btn outline">Contact Us</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SOCIAL PROOF -->
+<section class="social-proof">
+  <div class="container">
+    <p style="text-align:center;color:var(--text-3);font-size:13px;font-weight:600;letter-spacing:2px;text-transform:uppercase;">Trusted by agencies across Dubai</p>
+    <div class="proof-logos">
+      <span>DUBAI MARINA</span>
+      <span>DOWNTOWN</span>
+      <span>PALM JUMEIRAH</span>
+      <span>JVC</span>
+      <span>BUSINESS BAY</span>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="final-cta" id="contact">
+  <div class="container">
+    <div class="cta-box">
+      <h2>Ready to never miss<br>a lead again?</h2>
+      <p>Book a free demo call. We'll show you exactly how PropBot AI works with your listings.</p>
+      <div class="cta-form">
+        <input type="email" class="cta-input" placeholder="Enter your email" id="ctaEmail" />
+        <button class="btn-primary" onclick="submitLead()">Book Free Demo →</button>
+      </div>
+      <p style="font-size:12px;color:var(--text-3);margin-top:16px;">No commitment. See it working in 15 minutes.</p>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <p>© 2026 PropBot AI — Built in Dubai, for Dubai 🇦🇪 &nbsp;|&nbsp; <a href="mailto:hello@propbot.ai">hello@propbot.ai</a></p>
+  </div>
+</footer>
+
+<!-- FLOATING CHAT BUTTON -->
+<div class="chat-preview">
+  <div class="fab-tooltip">👋 See how I work — try me!</div>
+  <button class="chat-fab" onclick="alert('💬 This is where the live demo chatbot opens!\n\nOnce connected, visitors will chat with your AI here.')">💬</button>
+</div>
+
+<script>
+function submitLead() {
+  const email = document.getElementById('ctaEmail').value.trim();
+  if (!email || !email.includes('@')) {
+    alert('Please enter a valid email address.');
+    return;
+  }
+  // In production, this would POST to your backend/Formspree
+  alert('🎉 Thanks! We\'ll reach out within 24 hours to schedule your free demo.\n\nEmail: ' + email);
+  document.getElementById('ctaEmail').value = '';
+}
+
+// Smooth scroll for anchor links
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+  anchor.addEventListener('click', function(e) {
+    e.preventDefault();
+    const target = document.querySelector(this.getAttribute('href'));
+    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+});
+</script>
+</body>
+</html>
