@@ -980,13 +980,42 @@
 <script>
 function submitLead() {
   const email = document.getElementById('ctaEmail').value.trim();
+  const btn = document.querySelector('.cta-form .btn-primary');
   if (!email || !email.includes('@')) {
     alert('Please enter a valid email address.');
     return;
   }
-  // In production, this would POST to your backend/Formspree
-  alert('🎉 Thanks! We\'ll reach out within 24 hours to schedule your free demo.\n\nEmail: ' + email);
-  document.getElementById('ctaEmail').value = '';
+  btn.textContent = 'Sending...';
+  btn.disabled = true;
+
+  fetch('https://formspree.io/f/mpqyqljj', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      email: email,
+      source: 'propbot-website',
+      type: 'demo-request'
+    })
+  })
+  .then(r => {
+    if (r.ok) {
+      document.getElementById('ctaEmail').value = '';
+      btn.textContent = '✓ Demo Requested!';
+      btn.style.background = '#3DDC84';
+      setTimeout(() => {
+        btn.textContent = 'Book Free Demo →';
+        btn.style.background = '';
+        btn.disabled = false;
+      }, 3000);
+    } else {
+      throw new Error('Failed');
+    }
+  })
+  .catch(() => {
+    btn.textContent = 'Book Free Demo →';
+    btn.disabled = false;
+    alert('Something went wrong. Please try again.');
+  });
 }
 
 // Smooth scroll for anchor links
